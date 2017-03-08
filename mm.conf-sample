@@ -1,0 +1,8 @@
+{
+  "Username": "mobius@riseup.net",
+  "Password": "omgpassphrasesaresofrickingood",
+  "MaildirPath": "/home/lobster/Mail",
+  "TLSServerName": "pop.riseup.net",
+  "ServerAddress": "zsolxunfmbfuq7wf.onion:995",
+  "ProxyAddress": "127.0.0.1:9050"
+}
