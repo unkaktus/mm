@@ -16,6 +16,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/textproto"
 	"os"
 	"os/user"
@@ -28,6 +29,10 @@ import (
 
 type POP3Conn struct {
 	conn *textproto.Conn
+}
+
+type Dialer interface {
+	Dial(network, address string) (net.Conn, error)
 }
 
 func ParseResponseLine(input string) (ok bool, msg string, err error) {
@@ -149,12 +154,17 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	torDialer, err := proxy.SOCKS5("tcp", cfg.ProxyAddress, nil, proxy.Direct)
-	if err != nil {
-		log.Fatal(err)
+	var dialer Dialer
+	dialer = &net.Dialer{}
+	if cfg.ProxyAddress != "" {
+		var err error
+		dialer, err = proxy.SOCKS5("tcp", cfg.ProxyAddress, nil, proxy.Direct)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 	tlsConfig := &tls.Config{ServerName: cfg.TLSServerName}
-	conn, err := torDialer.Dial("tcp", cfg.ServerAddress)
+	conn, err := dialer.Dial("tcp", cfg.ServerAddress)
 	if err != nil {
 		log.Fatal(err)
 	}
