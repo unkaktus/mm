@@ -122,11 +122,11 @@ func main() {
 			log.Fatal(err)
 		}
 		s := strings.SplitN(line, " ", 2)
-		msgsize, err := strconv.Atoi(s[0])
-		if err != nil {
-			log.Fatal(err)
+		msgSize := "?"
+		if _, err := strconv.Atoi(s[0]); err == nil {
+			msgSize = s[0]
 		}
-		log.Printf("Fetching message %d/%d (%d bytes)", i, nmsg, msgsize)
+		log.Printf("Fetching message %d/%d (%s bytes)", i, nmsg, msgSize)
 		err = SaveToMaildir(cfg.MaildirPath, data)
 		if err != nil {
 			log.Fatal(err)
