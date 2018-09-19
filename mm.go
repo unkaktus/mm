@@ -133,6 +133,7 @@ type Config struct {
 	TLSServerName string
 	ServerAddress string
 	ProxyAddress  string
+	DisableTLS    bool
 }
 
 func main() {
@@ -163,17 +164,21 @@ func main() {
 			log.Fatal(err)
 		}
 	}
-	tlsConfig := &tls.Config{ServerName: cfg.TLSServerName}
-	conn, err := dialer.Dial("tcp", cfg.ServerAddress)
+	var conn net.Conn
+	conn, err = dialer.Dial("tcp", cfg.ServerAddress)
 	if err != nil {
 		log.Fatal(err)
 	}
-	tlsConn := tls.Client(conn, tlsConfig)
-	if err != nil {
-		log.Fatal(err)
+	if !cfg.DisableTLS {
+		tlsConfig := &tls.Config{ServerName: cfg.TLSServerName}
+		tlsConn := tls.Client(conn, tlsConfig)
+		if err != nil {
+			log.Fatal(err)
+		}
+		conn = tlsConn
 	}
 	buf := make([]byte, 255)
-	n, err := tlsConn.Read(buf)
+	n, err := conn.Read(buf)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -185,7 +190,7 @@ func main() {
 		log.Fatalf("Server returned error: %s", msg)
 	}
 
-	popConn := NewPOP3Conn(tlsConn)
+	popConn := NewPOP3Conn(conn)
 
 	line, err := popConn.Cmd("USER %s", cfg.Username)
 	if err != nil {
@@ -243,6 +248,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	tlsConn.Close()
+	conn.Close()
 
 }
