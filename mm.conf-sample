@@ -4,5 +4,6 @@
   "MaildirPath": "/home/lobster/Mail",
   "TLSServerName": "pop.riseup.net",
   "ServerAddress": "zsolxunfmbfuq7wf.onion:995",
-  "ProxyAddress": "127.0.0.1:9050"
+  "ProxyAddress": "127.0.0.1:9050",
+  "DisableTLS": false
 }
